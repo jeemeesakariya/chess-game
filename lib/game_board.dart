@@ -222,11 +222,14 @@ class _GameBoardState extends State<GameBoard> {
             board[row + direction][col] == null) {
            candidateMoves.add([row + direction, col]);
         }
+
        //pawn can move 2 sequares forward if they are at intial positions
-        if(isInBoard(row + 2 * direction,col) &&
-            board[row + 2 * direction][col] == null &&
-            board[row + direction][col] == null){
-          candidateMoves.add([row + 2 * direction, col]);
+        if((row == 1 && !piece.isWhite) || (row == 6 && piece.isWhite)) {
+          if (isInBoard(row + 2 * direction, col) &&
+              board[row + 2 * direction][col] == null &&
+              board[row + direction][col] == null) {
+            candidateMoves.add([row + 2 * direction, col]);
+          }
         }
 
        //pawns can kill diagonaly
@@ -585,8 +588,20 @@ class _GameBoardState extends State<GameBoard> {
   }
 
   // Reset to new game
-  void resetGame(){
+  void resetGame() {
     Navigator.pop(context);
+    _initializeBoard();
+    checkStatus =false;
+    whitePieceTaken.clear();
+    blackPieceTaken.clear();
+    whiteKingPosition = [7, 4];
+    blackKingPosition = [0, 4];
+    isWhiteTurn = true;
+    setState(() {});
+  }
+
+  //restsrt game
+  void restsrt(){
     _initializeBoard();
     checkStatus =false;
     whitePieceTaken.clear();
@@ -620,9 +635,15 @@ class _GameBoardState extends State<GameBoard> {
           //game status
           Text(checkStatus ? "CHECK!" :"" ),
 
+          ElevatedButton(
+              onPressed: restsrt,
+              child:const Text('RESTART')
+          ),
+
           //chess board
           Expanded(
             flex: 3,
+
             child: GridView.builder(
                 itemCount: 8 * 8,
                 //physics: const NeverScrollableScrollPhysics(),
